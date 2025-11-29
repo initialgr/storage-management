@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import { z } from "zod";
+import { set, z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { createAccount } from "@/lib/actions/user.actions";
 
 type FormType = "sign-in" | "sign-up";
 
@@ -32,6 +33,7 @@ const authFormSchema = (type: FormType) => {
 const AuthForm = ({ type }: { type: FormType }) => {
   const [isLoading, setisLoading] = useState(false);
   const [errorMessage, seterrorMessage] = useState("");
+  const [accountId, setAccountId] = useState(null);
 
   const formSchema = authFormSchema(type);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -43,7 +45,19 @@ const AuthForm = ({ type }: { type: FormType }) => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+    setisLoading(true);
+    seterrorMessage("");
+    try {
+      const user = await createAccount({
+        fullName: values.fullName || "",
+        email: values.email,
+      });
+      setAccountId(user.accountId);
+    } catch {
+        seterrorMessage("Failed to create Account. Please try again.");
+    } finally {
+      setisLoading(false);
+    }
   };
 
   return (
