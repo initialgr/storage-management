@@ -2,9 +2,11 @@
 
 import { ID, Query } from "node-appwrite";
 import { appwriteConfig } from "../appwrite/config";
-import { createAdminClient } from "../appwrite";
-import { parseStringify } from "../utils";
+import { createAdminClient, createSessionClient } from "../appwrite";
+
 import { cookies } from "next/headers";
+import { avatarPlaceholderUrl } from "@/constants";
+import { parseStringify } from "../utils";
 
 // ======================
 // GET USER BY EMAIL
@@ -36,7 +38,11 @@ export const sendEmailOTP = async ({ email }: { email: string }) => {
   const { account } = await createAdminClient();
 
   try {
-    const session = await account.createEmailToken(ID.unique(), email);
+    const session = await account.createEmailToken({
+      userId: ID.unique(),
+      email,
+    });
+
     return session.userId;
   } catch (error) {
     handleError(error, "Failed to send email OTP");
@@ -69,8 +75,7 @@ export const createAccount = async ({
       {
         fullName,
         email,
-        avatar:
-          "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+        avatar: avatarPlaceholderUrl,
         accountId,
       }
     );
@@ -106,4 +111,20 @@ export const verifyOTP = async ({
   } catch (error) {
     handleError(error, "Failed to verify OTP");
   }
+};
+
+export const getCurrentUser = async () => {
+  const { account, databases } = await createSessionClient();
+
+  const result = await account.get();
+  if (!result.$id) return null;
+
+  const user = await databases.listDocuments(
+    appwriteConfig.databaseId,
+    appwriteConfig.usersTableId,
+    [Query.equal("accountId", result.$id)]
+  );
+
+  if (user.total < 0 )return null;
+  return parseStringify(user.documents[0]);
 };
