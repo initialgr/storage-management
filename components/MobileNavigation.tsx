@@ -1,17 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import React, { use } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
@@ -22,6 +15,7 @@ import { navItems } from "@/constants";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import FileUploader from "./FileUploader";
+import { signOutUser } from "@/lib/actions/user.actions";
 
 interface Props {
   ownerId: string;
@@ -104,7 +98,7 @@ const MobileNavigation = ({
           <Separator className="my-5 bg-light-200/20" />
           <div className="flex flex-col justify-between gap-5 pb-5">
             <FileUploader/>
-            <Button type="submit" className="mobile-sign-out-button" onClick={() => {}}>
+            <Button type="submit" className="mobile-sign-out-button" onClick={async () => await signOutUser()}>
               <Image
                 src="/assets/icons/logout.svg"
                 alt="logo"
