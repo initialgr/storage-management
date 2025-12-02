@@ -88,6 +88,7 @@ export const getFiles = async () => {
         "name",
         "size",
         "url",
+        "bucketFileId",
         "type",
         "extension",
         "owner.fullName",
