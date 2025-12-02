@@ -81,33 +81,39 @@ export const formatDateTime = (isoString: string | null | undefined) => {
   const date = new Date(isoString);
 
   // Get hours and adjust for 12-hour format
-  let hours = date.getHours();
+  // 1. Get Time Components
+  const hours = date.getHours();
   const minutes = date.getMinutes();
-  const period = hours >= 12 ? "pm" : "am";
+  // Use 24-hour format (00-23) typically used in Indonesian standard time representation
+  const time = `${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}`;
 
-  // Convert hours to 12-hour format
-  hours = hours % 12 || 12;
-
-  // Format the time and date parts
-  const time = `${hours}:${minutes.toString().padStart(2, "0")}${period}`;
+  // 2. Get Date Components
   const day = date.getDate();
-  const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear();
 
-  return `${time}, ${day} ${month}`;
+  // 3. Indonesian Month Abbreviations
+  // The month names are translated and abbreviated in Indonesian.
+  const indonesianMonthNames = [
+    "Jan", // Januari
+    "Feb", // Februari
+    "Mar", // Maret
+    "Apr", // April
+    "Mei", // Mei
+    "Jun", // Juni
+    "Jul", // Juli
+    "Agu", // Agustus
+    "Sep", // September
+    "Okt", // Oktober
+    "Nov", // November
+    "Des", // Desember
+  ];
+  const month = indonesianMonthNames[date.getMonth()];
+
+  // 4. Combine and Return (e.g., "19:39, 2 Des 2025")
+  return `${time}, ${day} ${month} ${year}`;
+  // -----------------------------
 };
 
 export const getFileIcon = (

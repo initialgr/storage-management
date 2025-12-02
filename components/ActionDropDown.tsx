@@ -2,7 +2,6 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -25,6 +24,8 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { usePathname } from "next/navigation";
 import { renameFile } from "@/lib/actions/file.actions";
+import { Input } from "./ui/input";
+import { FileDetails } from "./ActionModalContent";
 
 const ActionDropDown = ({ file }: { file: Models.Document }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -105,13 +106,14 @@ const ActionDropDown = ({ file }: { file: Models.Document }) => {
             {label}
           </DialogTitle>
           {value === "rename" && (
-            <input
+            <Input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="p-2"
-            ></input>
+            />
           )}
+          {value && 'details' && <FileDetails file={file}></FileDetails>}
         </DialogHeader>
         {["rename", "delete", "share"].includes(value) && (
           <DialogFooter className="flex flex-col gap-3 md:flex-row ">
