@@ -12,9 +12,9 @@ import { uploadFile } from "@/lib/actions/file.actions";
 import { usePathname } from "next/navigation";
 
 interface Props {
-  ownerId?: string;
-  accountId?: string;
-  className?: string;
+  ownerId: string;
+  accountId: string;
+  className: string;
 }
 
 const FileUploader = ({ ownerId, accountId, className }: Props) => {
@@ -57,7 +57,7 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
     [ownerId, accountId, path]
   );
 
-  const { getRootProps, getInputProps} = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     onDrop,
   });
 

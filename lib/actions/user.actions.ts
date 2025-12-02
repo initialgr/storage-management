@@ -116,17 +116,27 @@ export const verifyOTP = async ({
 export const getCurrentUser = async () => {
   const { account, databases } = await createSessionClient();
 
-  const result = await account.get();
-  if (!result.$id) return null;
+  try {
+    // 1. This call succeeds if authenticated, or throws the scope error if guest.
+    const result = await account.get();
 
-  const user = await databases.listDocuments(
-    appwriteConfig.databaseId,
-    appwriteConfig.usersTableId,
-    [Query.equal("accountId", result.$id)]
-  );
+    if (!result.$id) return null; // Safe check (if it ever returned without error)
 
-  if (user.total === 0) return null;
-  return parseStringify(user.documents[0]);
+    // 2. Only run database query if account.get() succeeded.
+    const user = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.usersTableId,
+      [Query.equal("accountId", result.$id)]
+    );
+
+    if (user.total === 0) return null;
+    return parseStringify(user.documents[0]);
+  } catch (error: any) {
+    // 3. CATCH the Appwrite scope error (or any other API error).
+    // Now, instead of crashing the function, we return the intended value.
+    console.error("No active user session found. Returning null.", error);
+    return null;
+  }
 };
 
 export const signOutUser = async () => {
@@ -149,7 +159,7 @@ export const signInUser = async ({ email }: { email: string }) => {
       await sendEmailOTP({ email });
       return parseStringify({ accountId: existingUser.accountId });
     }
-    throw parseStringify({accountId: null, error: "User not found"});
+    throw parseStringify({ accountId: null, error: "User not found" });
   } catch (error) {
     handleError(error, "Failed to sign in");
   }

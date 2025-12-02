@@ -61,30 +61,47 @@ export const uploadFile = async ({
 };
 
 const createQueries = (currentUser: Models.Document) => {
-  const queries = [
+  return [
     Query.or([
-      Query.equal("owner", [currentUser.$id]),
-      Query.contains("users", [(currentUser as any).email]),
+      Query.equal("owner", currentUser.$id),
+      Query.contains("users", currentUser.email),
     ]),
   ];
-  return queries;
 };
+
 export const getFiles = async () => {
   const { databases } = await createAdminClient();
 
   try {
     const currentUser = await getCurrentUser();
-    const queries = createQueries(currentUser);
-    console.log({currentUser, queries})
+    if (!currentUser) throw new Error("User not found");
+
+    const queries = [
+      // 1. Filter/Pagination/Ordering queries (keep your existing ones)
+      // e.g., ...createQueries(currentUser),
+
+      // 2. Select Query: Ensures only the necessary fields are returned
+      // The $ is for the built-in fields like $createdAt.
+      Query.select([
+        "$id",
+        "$createdAt",
+        "name",
+        "size",
+        "url",
+        "type",
+        "extension",
+        "owner.fullName",
+      ]),
+    ];
+    console.log({ currentUser, queries });
     const files = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.filesTableId,
       queries
     );
-    console.log({files})
+    console.log({ files });
 
     return parseStringify(files);
-    if (!currentUser) throw new Error("User not found");
   } catch (error) {
     handleError(error, "Failed to get files");
   }
