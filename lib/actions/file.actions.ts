@@ -107,3 +107,33 @@ export const getFiles = async () => {
     handleError(error, "Failed to get files");
   }
 };
+
+export const renameFile = async ({
+  fileId,
+  name,
+  extension,
+  path,
+}: RenameFileProps) => {
+  // 1. FIX: Call createAdminClient() as an async function and await it
+  const { databases } = await createAdminClient();
+
+  try {
+    const newName = `${name}.${extension}`;
+
+    // 2. FIX: Correctly pass the fileId as the third argument
+    const updatedFile = await databases.updateDocument(
+      appwriteConfig.databaseId, // Argument 1: Database ID
+      appwriteConfig.filesTableId, // Argument 2: Collection ID
+      fileId, // Argument 3: Document ID (was missing a comma or positionally wrong)
+      {
+        // Argument 4: Data object
+        name: newName,
+      }
+    );
+
+    revalidatePath(path);
+    return parseStringify(updatedFile);
+  } catch (error) {
+    handleError(error, "Failed to rename file");
+  }
+};

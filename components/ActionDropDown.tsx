@@ -23,6 +23,8 @@ import Link from "next/link";
 import { Models } from "node-appwrite";
 import { useState } from "react";
 import { Button } from "./ui/button";
+import { usePathname } from "next/navigation";
+import { renameFile } from "@/lib/actions/file.actions";
 
 const ActionDropDown = ({ file }: { file: Models.Document }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,6 +32,7 @@ const ActionDropDown = ({ file }: { file: Models.Document }) => {
   const [action, setAction] = useState<ActionType | null>(null);
   const [name, setName] = useState(file.name);
   const [isLoading, setIsLoading] = useState(false);
+  const path = usePathname();
 
   const closeAllModals = () => {
     setIsModalOpen(false);
@@ -38,7 +41,60 @@ const ActionDropDown = ({ file }: { file: Models.Document }) => {
     setName(file.name);
   };
 
-  const handleAction = async () => {};
+  const handleAction = async () => {
+    // 1. Ensure 'action' object and its 'value' property exist
+    if (!action || !action.value) return;
+
+    setIsLoading(true);
+
+    const actionValue = action.value as keyof typeof actions;
+
+    // Define the map of actions (These functions return Promises)
+    const actions = {
+      rename: async () => {
+        // Use try/catch here to explicitly handle the outcome of the server action
+        try {
+          // Await the server function. It should return a document on success.
+          const updatedFile = await renameFile({
+            fileId: file.$id,
+            name,
+            extension: file.extension,
+            path,
+          });
+          // Return true if an object (document) was successfully returned
+          return !!updatedFile;
+        } catch (e) {
+          // Log the UI-side error and return false on failure
+          console.error(`Action failed: ${actionValue}`, e);
+          return false;
+        }
+      },
+      share: () => {
+        console.log("share");
+        return true;
+      }, // Return true for synchronous actions
+      delete: () => {
+        console.log("delete");
+        return true;
+      }, // Return true for synchronous actions
+    };
+
+    let success = false;
+
+    // 2. Execute the action by correctly indexing the 'actions' map
+    if (actions[actionValue]) {
+      success = await actions[actionValue]();
+    } else {
+      console.error(`Invalid action value: ${actionValue}`);
+    }
+
+    // 3. Check for clear boolean success before closing modal
+    if (success) {
+      closeAllModals();
+    }
+
+    setIsLoading(false);
+  };
   const renderDialogContent = () => {
     if (!action) return null;
     const { value, label } = action;
