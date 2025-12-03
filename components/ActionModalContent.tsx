@@ -2,6 +2,10 @@ import { Models } from "node-appwrite";
 import Thumbnail from "./Thumbnail";
 import FormattedDateTime from "./FormattedDateTime";
 import { convertFileSize, formatDateTime } from "@/lib/utils";
+import { SetStateAction } from "react";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import Image from "next/image";
 
 const ImageThumbnail = ({ file }: { file: Models.Document }) => {
   return (
@@ -33,6 +37,56 @@ export const FileDetails = ({ file }: { file: Models.Document }) => {
         <DetailRow label="Size:" value={convertFileSize(file.size)} />
         <DetailRow label="Owner:" value={file.owner.fullName} />
         <DetailRow label="Last Edit:" value={formatDateTime(file.$updatedAt)} />
+      </div>
+    </>
+  );
+};
+
+interface Props {
+  file: Models.Document;
+  onInputChange: React.Dispatch<SetStateAction<string[]>>;
+  onRemove: (email: string) => void;
+}
+
+export const ShareInput = ({ file, onInputChange, onRemove }: Props) => {
+  return (
+    <>
+      <ImageThumbnail file={file} />
+      <div className="share-wrapper">
+        <p className="subtitle-2 pl-1 text-light-100 ">
+          Share file with other users
+        </p>
+        <Input
+          type="email"
+          placeholder="enter email address"
+          onChange={(e) => onInputChange(e.target.value.trim().split(","))}
+          className="share-input-field"
+        />
+        <div className="pt-4">
+          <div className="flex justify-between">
+            <p className=" text-light-100">Shared with</p>
+            <p className=" text-light-100">{file.users.length} users</p>
+          </div>
+          <ul className="pt-2">
+            {file.users.map((email: string) => (
+              <li
+                key={email}
+                className="flex items-center justify-between gap-2"
+              >
+                <p className="subtitle-2">{email}</p>
+                <Button className="share-remove-user" onClick={() => onRemove(email)}>
+                  <Image
+                    src="/assets/icons/remove.svg"
+                    alt="remove"
+                    width={24}
+                    height={24}
+                    className="remove-icon"
+                  />
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </>
   );

@@ -92,6 +92,7 @@ export const getFiles = async () => {
         "type",
         "extension",
         "owner.fullName",
+        "users"
       ]),
     ];
     console.log({ currentUser, queries });
@@ -135,5 +136,31 @@ export const renameFile = async ({
     return parseStringify(updatedFile);
   } catch (error) {
     handleError(error, "Failed to rename file");
+  }
+};
+
+export const updateFileUsers = async ({
+  fileId,
+  emails,
+  path,
+}: UpdateFileUsersProps) => {
+  // 1. FIX: Call createAdminClient() as an async function and await it
+  const { databases } = await createAdminClient();
+
+  try {
+    const updatedFile = await databases.updateDocument(
+      appwriteConfig.databaseId, // Argument 1: Database ID
+      appwriteConfig.filesTableId, // Argument 2: Collection ID
+      fileId, // Argument 3: Document ID (was missing a comma or positionally wrong)
+      {
+        // Argument 4: Data object
+        users: emails,
+      }
+    );
+
+    revalidatePath(path);
+    return parseStringify(updatedFile);
+  } catch (error) {
+    handleError(error, "Failed to share");
   }
 };
