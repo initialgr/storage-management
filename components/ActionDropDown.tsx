@@ -23,7 +23,11 @@ import { Models } from "node-appwrite";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { usePathname } from "next/navigation";
-import { renameFile, updateFileUsers } from "@/lib/actions/file.actions";
+import {
+  deleteFile,
+  renameFile,
+  updateFileUsers,
+} from "@/lib/actions/file.actions";
 import { Input } from "./ui/input";
 import { FileDetails, ShareInput } from "./ActionModalContent";
 
@@ -92,8 +96,7 @@ const ActionDropDown = ({ file }: { file: Models.Document }) => {
         });
       }, // Return true for synchronous actions
       delete: () => {
-        console.log("delete");
-        return true;
+        deleteFile({ fileId: file.$id, path, bucketFileId: file.bucketFileId });
       }, // Return true for synchronous actions
     };
 
@@ -137,6 +140,12 @@ const ActionDropDown = ({ file }: { file: Models.Document }) => {
               onInputChange={setEmails}
               onRemove={handleRemoveUser}
             />
+          )}
+          {value === "delete" && (
+            <p className="delete-confirmation">
+              Are you sure you want to delete{" "}
+              <span className="delete-file-name">{file.name}</span>
+            </p>
           )}
         </DialogHeader>
         {["rename", "delete", "share"].includes(value) && (
