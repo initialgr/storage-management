@@ -31,7 +31,7 @@ import {
 import { Input } from "./ui/input";
 import { FileDetails, ShareInput } from "./ActionModalContent";
 
-const ActionDropDown = ({ file }: { file: Models.Document }) => {
+export const ActionDropDown = ({ file }: { file: Models.Document }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [action, setAction] = useState<ActionType | null>(null);

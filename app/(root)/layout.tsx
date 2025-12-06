@@ -6,6 +6,8 @@ import { redirect } from "next/navigation";
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 
+export const dynamic = "force-dynamic";
+
 const Layout = async ({ children }: { children: React.ReactNode }) => {
   const currentUser = await getCurrentUser();
   if (currentUser === null) return redirect("/sign-in");
@@ -15,7 +17,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
       <Sidebar {...currentUser} />
       <section className="flex h-full flex-1 flex-col">
         <MobileNavigation {...currentUser} />
-        <Header userId={currentUser.$id} accountId={currentUser.accountId}/>
+        <Header userId={currentUser.$id} accountId={currentUser.accountId} />
         <div className="main-content">{children}</div>
       </section>
       <Toaster />
