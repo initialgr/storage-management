@@ -8,6 +8,9 @@ Aplikasi ini telah di-*deploy* dan dapat diakses publik melalui tautan berikut:
 
 [**Kunjungi Aplikasi Live**](https://storage-management-orcin.vercel.app/)
 
+## 📸 Tampilan Aplikasi
+![Dashboard Aplikasi StoreIt - Cloud Storage](/public/img/Dashboard.png)
+
 ## ✨ Fitur Utama
 
 * **File Upload & Management:** Unggah, lihat, dan kelola berbagai tipe file (gambar, dokumen, video, dll.).
