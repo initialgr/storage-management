@@ -2,6 +2,12 @@
 
 Sebuah aplikasi manajemen penyimpanan file berbasis web (seperti layanan cloud storage) yang dikembangkan menggunakan **Next.js** dan **Appwrite**. Aplikasi ini memungkinkan pengguna untuk mengunggah, mengelola, dan membagikan file sambil memvisualisasikan penggunaan ruang penyimpanan secara real-time.
 
+## 🌐 Live Demo
+
+Aplikasi ini telah di-*deploy* dan dapat diakses publik melalui tautan berikut:
+
+[**Kunjungi Aplikasi Live**](https://storage-management-orcin.vercel.app/)
+
 ## ✨ Fitur Utama
 
 * **File Upload & Management:** Unggah, lihat, dan kelola berbagai tipe file (gambar, dokumen, video, dll.).
